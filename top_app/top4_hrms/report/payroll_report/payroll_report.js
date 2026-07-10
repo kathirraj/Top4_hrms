@@ -10,10 +10,10 @@ frappe.query_reports["Payroll report"] = {
       options: "Employee",
     },
     {
-      fieldname: "company",
-      label: "Company",
+      fieldname: "branch",
+      label: "Work Location",
       fieldtype: "Link",
-      options: "Company",
+      options: "Branch",
     },
     {
       fieldname: "from_date",

@@ -28,17 +28,20 @@ def get_salary_components_by_type():
 
 def salary_result(filters=None):
     name = filters.get('name') if filters else None
-    company = filters.get('company') if filters else None
+    branch = filters.get('branch') if filters else None
+    grade = filters.get('grade') if filters else None
     from_date = filters.get('from_date')
     to_date = filters.get('to_date')
 
     earnings, deductions = get_salary_components_by_type()
     
-    conditions = []
+    conditions = ["ss.docstatus = 1"]
     if name:
         conditions.append(f"ss.employee = '{name}'")
-    if company:
-        conditions.append(f"ss.company = '{company}'")
+    if branch:
+        conditions.append(f"e.branch = '{branch}'")
+    if grade:
+        conditions.append(f"e.grade = '{grade}'")
     if from_date and to_date:
         conditions.append(f"ss.posting_date BETWEEN '{from_date}' AND '{to_date}'")
 
@@ -50,6 +53,7 @@ def salary_result(filters=None):
             ss.employee,
             ss.employee_name,
             e.branch,
+            e.grade,
             ss.total_working_days,
             ss.salary_structure,
             ss.rounded_total,
@@ -57,6 +61,7 @@ def salary_result(filters=None):
 			e.custom_hmi_id,
             (ss.total_working_days - ss.absent_days) AS present_days,
             ss.bank_account_no,
+            ss.gross_pay,
             e.ifsc_code,
             ss.bank_name
         FROM `tabSalary Slip` ss
@@ -139,6 +144,13 @@ def get_columns(earnings, deductions):
             "width": 100,
             "align": "left"
         },
+        {
+            "label": "Grade",
+            "fieldname": "grade",
+            "fieldtype": "Data",
+            "width": 100,
+            "align": "left"
+        },
         
         {
             "label": "Present Days",
@@ -199,6 +211,13 @@ def get_columns(earnings, deductions):
         "width": 130,
         "align": "right"
     })
+    columns.append({
+        "label": "Gross Pay",
+        "fieldname": "gross_pay",
+        "fieldtype": "Currency",
+        "width": 130,
+        "align": "right"
+    })
     # Net Pay Column
     columns.append({
         "label": "Net Pay",
@@ -207,7 +226,13 @@ def get_columns(earnings, deductions):
         "width": 130,
         "align": "right"
     })
-    
+    columns.append({
+        "label": "Bank Name",
+        "fieldname": "bank_name",
+        "fieldtype": "Data",
+        "width": 130,
+        "align": "left"
+    })
     columns.append({
         "label": "Bank Account No",
         "fieldname": "bank_account_no",
@@ -222,14 +247,6 @@ def get_columns(earnings, deductions):
         "fieldtype": "Data",
         "width": 130,
         "align": "right"
-    })
-    
-    columns.append({
-        "label": "Bank Name",
-        "fieldname": "bank_name",
-        "fieldtype": "Data",
-        "width": 130,
-        "align": "left"
     })
    
     return columns
@@ -298,12 +315,6 @@ def execute(filters=None):
     fy_display = f"FY {fy_start_year}-{str(fy_end_year)[-2:]}"  # e.g., "FY 2024-25"
 
     report_summary = [
-        {
-            "label": _("Total Employees"),
-            "value": get_current_employee,
-            "indicator": "Blue",
-            "bgcolor": "#f0f8ff",
-        },
         {
             "label": _("Month"),
             "value": month_display,
