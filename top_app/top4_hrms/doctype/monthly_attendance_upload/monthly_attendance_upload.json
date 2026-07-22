@@ -2,6 +2,7 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
+ "autoname": "TOP4-.#####",
  "creation": "2026-07-20 00:58:33.264080",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -68,6 +69,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_bulk_edit": 1,
    "fieldname": "attendance_detail",
    "fieldtype": "Table",
    "label": "Attendance Detail",
@@ -77,10 +79,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-20 01:37:18.871632",
+ "modified": "2026-07-22 12:50:46.367489",
  "modified_by": "Administrator",
  "module": "Top4_hrms",
  "name": "Monthly Attendance Upload",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
